@@ -1,13 +1,16 @@
 const path = require('path')
 const express = require('express')
-
-console.log(__dirname)
-console.log(path.join(__dirname,'../public'))
+const hbs = require('hbs')
 
 const app = express()
+const publicPath = path.join(__dirname,'../public')
+const viewsPath = path.join(__dirname,'../templates/views')
+const partialsPath = path.join(__dirname,'../templates/partials')
 
 app.set('view engine','hbs')
-app.use(express.static(path.join(__dirname,'../public')))
+app.set('views', viewsPath)
+hbs.registerPartials(partialsPath)
+app.use(express.static(publicPath))
 
 
 app.get('', (req,res) => {
@@ -19,18 +22,30 @@ app.get('', (req,res) => {
 
 app.get('/about', (req,res) => {
     res.render('about',{
-        about: 'About!',
+        title: 'About',
+        name: 'Espedito'
     })
 })
 
 app.get('/help', (req,res) => {
     res.render('help',{
         message: 'Help message',
+        title: 'Help',
+        name: 'Espedito'
     })
 })
 
 app.get('/weather', (req,res) => {
     res.send({forecast: 'Sunny', location: 'Sao Paulo'})
+})
+
+app.get('/help/*', (req, res) => {
+    res.send("Help article not found")
+})
+
+
+app.get('*', (req, res) => {
+    res.send("404")
 })
 
 app.listen(3000, () => {
